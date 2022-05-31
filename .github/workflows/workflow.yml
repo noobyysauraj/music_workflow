@@ -34,14 +34,8 @@ jobs:
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPO }} -b ${Branch} source
           cd source
-          sudo apt install git curl python3-pip ffmpeg -y
-          pip3 install -U pip
-          curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-          sudo apt install -y nodejs
-          sudo apt install build-essential
-          sudo npm install pm2@latest -g
-          pip3 install -U -r requirements.txt
-          python3 main.py
+          sudo docker build . -t musicplayer
+          sudo docker run musicplayer
           
       - name: Loop Workflow
         continue-on-error: true
