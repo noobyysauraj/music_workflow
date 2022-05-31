@@ -1,0 +1,47 @@
+name: Music Bot Loop
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore: 'README.md'
+  workflow_dispatch:
+  issues:
+    types: opened
+env:
+  # Change these values if you have forked it for your own works
+  GitHubMail: "me@sauraj.cf"
+  GitHubName: "noobyysauraj"
+  Branch: "master"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Set Git Configs & Secrets
+        run: |
+          git config --global user.email ${GitHubMail}
+          git config --global user.name ${GitHubName}
+          git config --global credential.helper store
+          echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+
+      - name: Start Bot
+        timeout-minutes: 345
+        continue-on-error: true
+        run: |
+          git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPO }} -b ${Branch} source
+          cd YukkiMusicBot
+          sudo bash setup
+          bash start
+      - name: Loop Workflow
+        continue-on-error: true
+        run: |
+          git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} loop
+          cd loop || exit 1
+          echo $(( RANDOM - ( RANDOM % RANDOM ) )) > bot_loop.txt
+          git add bot_loop.txt
+          git commit --author "noobyysauraj <me@sauraj.cf>" -m "Workflow : Loop"
+          git push -q https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} HEAD:main
