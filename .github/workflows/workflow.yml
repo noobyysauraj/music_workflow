@@ -33,7 +33,7 @@ jobs:
         continue-on-error: true
         run: |
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPO }} -b ${Branch} source
-          cd YukkiMusicBot
+          cd source
           sudo bash setup
           bash start
       - name: Loop Workflow
